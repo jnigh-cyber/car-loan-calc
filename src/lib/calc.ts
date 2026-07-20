@@ -54,10 +54,26 @@ export function calcAmortizationSchedule(
 
     for (let month = 1; month <= inputs.termMonths; month++) {
         const interest = balance * monthlyRate;
-        const principal = monthlyPayment - interest;
+        let principal = monthlyPayment - interest;
+        let payment = monthlyPayment
+        if (month === inputs.termMonths) {
+            principal = balance
+            payment = balance + interest
+        }
         balance = balance - principal;
-        schedule.push({ month, payment: monthlyPayment, principal, interest, balance });
+        schedule.push({ month, payment, principal, interest, balance });;
     }
 
     return schedule
 }
+
+const testInputs = { amountFinanced: 21779.94, apr: 0.06, termMonths: 60 };
+const testPayment = calcMonthlyPayment(testInputs);
+const testSchedule = calcAmortizationSchedule(testInputs, testPayment);
+
+const lastRow = testSchedule[testSchedule.length - 1];
+console.log("Last row:", lastRow);
+console.log("Balance is zero?", lastRow.balance === 0);
+console.log("Payment = principal + interest?", 
+  Math.abs(lastRow.payment - (lastRow.principal + lastRow.interest)) < 0.001
+);
