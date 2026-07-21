@@ -178,6 +178,32 @@ function CalculateForm() {
                         </div>
                     </section>
                 )}
+                {showResults && (
+                    <div className="mt-6 max-h-96 overflow-y-auto border border-line">
+                        <table className="w-full font-mono text-sm">
+                        <thead className="sticky top-0 bg-paper">
+                            <tr className="border-b-2 border-ink text-xs uppercase tracking-wide text-muted">
+                            <th className="px-3 py-2 text-left font-body font-semibold">Month</th>
+                            <th className="px-3 py-2 text-right font-body font-semibold">Payment</th>
+                            <th className="px-3 py-2 text-right font-body font-semibold">Principal</th>
+                            <th className="px-3 py-2 text-right font-body font-semibold">Interest</th>
+                            <th className="px-3 py-2 text-right font-body font-semibold">Balance</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {schedule.map((row) => (
+                            <tr key={row.month} className="border-b border-line text-ink">
+                                <td className="px-3 py-1.5">{row.month}</td>
+                                <td className="px-3 py-1.5 text-right">${row.payment.toFixed(2)}</td>
+                                <td className="px-3 py-1.5 text-right">${row.principal.toFixed(2)}</td>
+                                <td className="px-3 py-1.5 text-right">${row.interest.toFixed(2)}</td>
+                                <td className="px-3 py-1.5 text-right">${row.balance.toFixed(2)}</td>
+                            </tr>
+                            ))}
+                        </tbody>
+                        </table>
+                    </div>
+                )}
             </div>
         </div>
     )
