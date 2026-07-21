@@ -1,5 +1,4 @@
 import CalculateForm from './components/CalculatorForm'
-import './App.css'
 
 function App() {
   
