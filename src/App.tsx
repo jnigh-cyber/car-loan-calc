@@ -1,4 +1,4 @@
-import { calcOtd } from './lib/calc';
+import CalculateForm from './components/CalculatorForm'
 import './App.css'
 
 function App() {
@@ -6,7 +6,7 @@ function App() {
   
   return (
       <>
-      
+        <CalculateForm />
       </>
   )
 }

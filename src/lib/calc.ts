@@ -1,4 +1,4 @@
-interface CalcInputs {
+export interface CalcInputs {
     price: number;
     tradeInValue: number;
     tradeInOwed: number;
@@ -7,13 +7,13 @@ interface CalcInputs {
     taxRate: number;
 }
 
-interface AmortizationInputs {
+export interface AmortizationInputs {
     amountFinanced: number;
     apr: number;
     termMonths: number;
 }
 
-interface AmortizationRow {
+export interface AmortizationRow {
     month: number;
     payment: number;
     principal: number;
@@ -66,14 +66,3 @@ export function calcAmortizationSchedule(
 
     return schedule
 }
-
-const testInputs = { amountFinanced: 21779.94, apr: 0.06, termMonths: 60 };
-const testPayment = calcMonthlyPayment(testInputs);
-const testSchedule = calcAmortizationSchedule(testInputs, testPayment);
-
-const lastRow = testSchedule[testSchedule.length - 1];
-console.log("Last row:", lastRow);
-console.log("Balance is zero?", lastRow.balance === 0);
-console.log("Payment = principal + interest?", 
-  Math.abs(lastRow.payment - (lastRow.principal + lastRow.interest)) < 0.001
-);
