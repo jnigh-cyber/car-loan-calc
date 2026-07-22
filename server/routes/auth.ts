@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { pool } from '../db';
 import express from 'express';
 import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 const router = Router();
 
@@ -39,7 +40,15 @@ router.post('/login', express.json(), async (req, res) => {
             if (!compPass) {
                 res.status(401).json({ status: 'Unauthorized', message: 'Invalid credentials.' });
             } else {
-                //ISSUE JWT 
+                const token = jwt.sign(
+                    { id: results.rows[0].id, username: results.rows[0].username },
+                    process.env.JWT_SECRET!,
+                    { expiresIn: '1h'}
+                );
+
+                //REMINDER Set secure: 'true' for prod.
+                res.cookie('token', token, { httpOnly: true, secure: false, sameSite: 'strict', maxAge: 3600000});
+                res.json({ id: results.rows[0].id, username: results.rows[0].username });
             }
         }
     } catch (err) {
