@@ -1,10 +1,14 @@
 import express from 'express';
 import { pool } from './db';
+import cookieParser from 'cookie-parser';
 import calculationsRouter from './routes/calculations';
 import authRouter from './routes/auth';
 
 const app = express();
+app.use(cookieParser());
 const PORT = 3001;
+
+
 
 //Health check
 app.get('/api/health', async (req, res) => {
