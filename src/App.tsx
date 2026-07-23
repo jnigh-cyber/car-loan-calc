@@ -1,12 +1,16 @@
-import CalculateForm from './components/CalculatorForm'
+import { Routes, Route } from 'react-router-dom';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import CalculatePage from './pages/CalculatePage';
+
 
 function App() {
-  
-  
   return (
-      <>
-        <CalculateForm />
-      </>
+      <Routes>
+        <Route path='/login' element={<LoginPage />} />
+        <Route path='/register' element={<RegisterPage  />} />
+        <Route path='/' element={<CalculatePage />} />
+      </Routes>
   )
 }
 

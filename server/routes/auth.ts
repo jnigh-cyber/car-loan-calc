@@ -3,9 +3,21 @@ import { pool } from '../db';
 import express from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { requireAuth } from '../middleware/auth';
+import { JwtPayload } from 'jsonwebtoken';
 
 
 const router = Router();
+
+router.get('/me', requireAuth, async (req, res) => {
+    try {
+        const { id, username } = req.user as JwtPayload;
+        res.json({ id, username });
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({ status: 'error', message: 'Failed to fetch authd user.' })
+    }
+})
 
 router.post('/register', express.json(), async (req, res) => {
     try {
@@ -18,9 +30,16 @@ router.post('/register', express.json(), async (req, res) => {
                 VALUES ($1, $2, $3) 
                 RETURNING id, username, email`, [username, email, passwordHash]    
             );
+
+            const token = jwt.sign(
+                { id: newUser.rows[0].id, username: newUser.rows[0].username },
+                process.env.JWT_SECRET!,
+                {expiresIn: '1h'}
             
+            );
+            res.cookie('token', token, { httpOnly: true, secure: false, sameSite: 'strict', maxAge: 3600000 })
             res.status(201).json(newUser.rows[0]);
-            
+
         } else {
             res.status(409).json({ status: 'error', message: 'Email is already registered.' });
         }

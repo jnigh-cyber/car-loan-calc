@@ -3,12 +3,16 @@ import { pool } from './db';
 import cookieParser from 'cookie-parser';
 import calculationsRouter from './routes/calculations';
 import authRouter from './routes/auth';
+import cors from 'cors';
 
 const app = express();
 app.use(cookieParser());
 const PORT = 3001;
 
-
+app.use(cors({
+    origin: 'http://localhost:5173',
+    credentials: true,
+}));
 
 //Health check
 app.get('/api/health', async (req, res) => {
