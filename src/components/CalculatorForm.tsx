@@ -62,7 +62,7 @@ function CalculateForm() {
         if (inputs.price <= 0 || inputs.termMonths <= 0) return;
     
         try {
-            const response = await fetch('http://localhost:3001/api/calculations', {
+            const response = await fetch(`${API_URL}/api/calculations`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
