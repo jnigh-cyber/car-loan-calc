@@ -11,7 +11,7 @@ function Header() {
         e.preventDefault();
 
         try {
-            const response = await fetch('http://localhost:3001/api/auth/logout', {
+            await fetch('http://localhost:3001/api/auth/logout', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
