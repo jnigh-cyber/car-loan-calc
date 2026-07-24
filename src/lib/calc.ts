@@ -7,6 +7,12 @@ export interface CalcInputs {
     taxRate: number;
 }
 
+export interface LoanInputs extends CalcInputs {
+    apr: number;
+    termMonths: number;
+    downPayment: number;
+}
+
 export interface AmortizationInputs {
     amountFinanced: number;
     apr: number;

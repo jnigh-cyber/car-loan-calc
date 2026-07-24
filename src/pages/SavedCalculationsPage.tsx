@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { API_URL } from '../lib/config';
 
 type SavedCalculation = {
     id: number;
@@ -27,7 +28,7 @@ function SavedCalculationsPage() {
     useEffect(() => {
         async function fetchCalculations() {
             try {
-                const response = await fetch('http://localhost:3001/api/calculations', {
+                const response = await fetch(`${API_URL}/api/calculations`, {
                     credentials: 'include'
                 });
 
@@ -50,7 +51,7 @@ function SavedCalculationsPage() {
 
     async function handleDelete(id: number) {
         try {
-            const response = await fetch(`http://localhost:3001/api/calculations/${id}`, {
+            const response = await fetch(`${API_URL}/api/calculations/${id}`, {
                 method: 'DELETE',
                 credentials: 'include'
             });

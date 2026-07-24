@@ -1,6 +1,12 @@
 import { useState } from 'react'
-import { calcOtd, calcMonthlyPayment, calcAmortizationSchedule, type AmortizationInputs, type CalcInputs, type AmortizationRow } from '../lib/calc'
+import { calcOtd, calcMonthlyPayment, calcAmortizationSchedule, type AmortizationInputs, type LoanInputs, type AmortizationRow } from '../lib/calc'
+import { API_URL } from '../lib/config';
 
+function toNumber(value: string): number {
+    const n = Number(value);
+    return Number.isFinite(n) ? n : 0;
+}
+ 
 
 function CalculateForm() {
     const [ price, setPrice ] = useState<string>('');
@@ -22,57 +28,59 @@ function CalculateForm() {
 
     async function handleCalculate(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
-
-        const otdInputs: CalcInputs = {
-            price: Number(price) || 0,
-            tradeInValue: Number(tradeInValue) || 0,
-            tradeInOwed: Number(tradeInOwed) || 0,
-            docFee: Number(docFee) || 0,
-            dmvFees: Number(dmvFees) || 0,
-            taxRate: Number(taxRate) / 100 || 0,
+        setSaveError('');
+    
+        // Percent at the input boundary, fraction everywhere past it.
+        const inputs: LoanInputs = {
+            price: toNumber(price),
+            tradeInValue: toNumber(tradeInValue),
+            tradeInOwed: toNumber(tradeInOwed),
+            docFee: toNumber(docFee),
+            dmvFees: toNumber(dmvFees),
+            taxRate: toNumber(taxRate) / 100,
+            apr: toNumber(apr) / 100,
+            termMonths: toNumber(termMonths),
+            downPayment: toNumber(downPayment),
         };
-
-        const calculatedOtd = calcOtd(otdInputs);
-        const amountFinanced = calculatedOtd - Number(downPayment);
-        const amortizationInputs: AmortizationInputs = { amountFinanced, apr: Number(apr) / 100, termMonths: Number(termMonths)};
+    
+        const calculatedOtd = calcOtd(inputs);
+        const amountFinanced = calculatedOtd - inputs.downPayment;
+        const amortizationInputs: AmortizationInputs = {
+            amountFinanced,
+            apr: inputs.apr,
+            termMonths: inputs.termMonths,
+        };
         const calculatedPayment = calcMonthlyPayment(amortizationInputs);
-        const calculateSchedule = calcAmortizationSchedule(amortizationInputs, calculatedPayment);
-
+        const calculatedSchedule = calcAmortizationSchedule(amortizationInputs, calculatedPayment);
+    
         setOtd(calculatedOtd);
         setMonthlyPayment(calculatedPayment);
-        setSchedule(calculateSchedule);
+        setSchedule(calculatedSchedule);
         setShowResults(true);
-
+    
+        // Don't persist junk rows.
+        if (inputs.price <= 0 || inputs.termMonths <= 0) return;
+    
         try {
             const response = await fetch('http://localhost:3001/api/calculations', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
                 body: JSON.stringify({
-                    label,
-                    price,
-                    tradeInValue,
-                    tradeInOwed,
-                    docFee,
-                    dmvFees,
-                    taxRate,
-                    apr,
-                    termMonths,
-                    downPayment,
+                    ...inputs,
+                    label: label.trim() || `Calculation — ${new Date().toLocaleDateString()}`,
                     otd: calculatedOtd,
                     monthlyPayment: calculatedPayment,
                 }),
             });
-
+    
             if (!response.ok) {
                 setSaveError('Failed to save calculation.');
-                setShowResults(true);
-                return;
             }
         } catch (err) {
-            console.log(err);
+            console.error(err);
+            setSaveError('Could not reach the server — calculation not saved.');
         }
-        
     }
     
 

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Navigate, Outlet } from 'react-router-dom';
+import { API_URL } from '../lib/config';
 import Header from './Header';
 
 export default function ProtectedRoute() {
@@ -10,7 +11,7 @@ export default function ProtectedRoute() {
     useEffect(() => {
         async function checkAuth() {
             try {
-                const response = await fetch('http://localhost:3001/api/auth/me', {
+                const response = await fetch(`${API_URL}/api/auth/me`, {
                     credentials: 'include'
                 });
 

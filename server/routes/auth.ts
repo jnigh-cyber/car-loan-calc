@@ -5,6 +5,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { requireAuth } from '../middleware/auth';
 import { JwtPayload } from 'jsonwebtoken';
+import { clearCookieOptions } from '../config'
 
 
 const router = Router();
@@ -78,7 +79,7 @@ router.post('/login', express.json(), async (req, res) => {
 })
 
 router.post('/logout', async (req, res) => {
-    res.clearCookie('token', { httpOnly: true, sameSite: 'strict' });
+    res.clearCookie('token', clearCookieOptions);
     res.status(200).json({ status: 'success', message: 'Successfully logged out.' });
 })
 

@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import { useState, type SubmitEvent } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import { API_URL } from '../lib/config';
 
 function RegisterPage() {
     const { setUser } = useAuth();
@@ -10,11 +11,11 @@ function RegisterPage() {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
 
-    async function handleRegister(e: React.SubmitEvent<HTMLFormElement>) {
+    async function handleRegister(e: SubmitEvent) {
         e.preventDefault();
 
         try {
-            const response = await fetch('http://localhost:3001/api/auth/register', {
+            const response = await fetch(`${API_URL}/api/auth/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -22,7 +23,10 @@ function RegisterPage() {
             });
 
             if(!response.ok) {
-                setError('Resgistration failed.');
+                setError(response.status === 409
+                    ? 'That email has already been registered'
+                    : 'Registration failed.'
+                );
                 return;
             }
 
@@ -31,6 +35,7 @@ function RegisterPage() {
             navigate('/')
         } catch (err) {
             console.log(err);
+            setError('Could not reach the server. Please try again.');
         }
     }
 

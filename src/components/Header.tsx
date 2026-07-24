@@ -1,17 +1,19 @@
 import type React from 'react';
+import { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
+import { API_URL } from '../lib/config';
 
 function Header() {
     const { setUser } = useAuth();
     const navigate = useNavigate();
+    const [ error, setError ] = useState<string>('');
 
 
     async function handleLogout(e: React.MouseEvent<HTMLButtonElement>) {
-        e.preventDefault();
 
         try {
-            await fetch('http://localhost:3001/api/auth/logout', {
+            await fetch(`${API_URL}/api/auth/logout`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -22,6 +24,7 @@ function Header() {
 
         } catch (err) {
             console.log(err);
+            setError('Could not reach the server. Please try again.');
         }
     }
 

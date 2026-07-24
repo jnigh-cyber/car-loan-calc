@@ -1,6 +1,7 @@
-import { useState } from 'react'
-import { useAuth } from '../context/AuthContext'
+import { useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
+import { API_URL } from '../lib/config';
 
 function LoginPage() {
     const { setUser } = useAuth();
@@ -13,7 +14,7 @@ function LoginPage() {
         e.preventDefault();
 
         try {
-            const response = await fetch('http://localhost:3001/api/auth/login', {
+            const response = await fetch(`${API_URL}/api/auth/login`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 credentials: 'include',
@@ -31,6 +32,7 @@ function LoginPage() {
 
         } catch (err) {
             console.log(err);
+            setError('Could not reach the server. Please try again.');
         }
     }
 
