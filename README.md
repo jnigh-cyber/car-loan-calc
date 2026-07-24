@@ -110,9 +110,9 @@ The app runs on `http://localhost:5173`.
 
 | Method | Endpoint                     | Description                               | Auth required |
 |--------|------------------------------|-------------------------------------------|:---:|
-| POST   | `/api/auth/register`           | Create an account (auto-logs in on success)  | ✅ |
-| POST   | `/api/auth/login`              | Log in, issues a JWT cookie                  | ✅ |
-| POST   | `/api/auth/logout`             | Clears the session cookie                    | ✅ |
+| POST   | `/api/auth/register`           | Create an account (auto-logs in on success)  |   |
+| POST   | `/api/auth/login`              | Log in, issues a JWT cookie                  |   |
+| POST   | `/api/auth/logout`             | Clears the session cookie                    |   |
 | GET    | `/api/auth/me`                 | Returns the current logged-in user           | ✅ |
 | GET    | `/api/calculations`            | List the logged-in user's saved calculations | ✅ |
 | GET    | `/api/calculations/:id`        | Get one saved calculation                    | ✅ |
