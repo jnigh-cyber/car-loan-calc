@@ -77,4 +77,9 @@ router.post('/login', express.json(), async (req, res) => {
     }
 })
 
+router.post('/logout', async (req, res) => {
+    res.clearCookie('token', { httpOnly: true, sameSite: 'strict' });
+    res.status(200).json({ status: 'success', message: 'Successfully logged out.' });
+})
+
 export default router;

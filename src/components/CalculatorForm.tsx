@@ -3,36 +3,38 @@ import { calcOtd, calcMonthlyPayment, calcAmortizationSchedule, type Amortizatio
 
 
 function CalculateForm() {
-    const [ price, setPrice ] = useState<number>(0);
-    const [ tradeInValue, setTradeInValue ] = useState<number>(0);
-    const [ tradeInOwed, setTradeInOwed ] = useState<number>(0);
-    const [ docFee, setDocFee ] = useState<number>(0);
-    const [ dmvFees, setDmvFees ] = useState<number>(0);
-    const [ taxRate, setTaxRate ] = useState<number>(0);
-    const [ apr, setApr ] = useState<number>(0);
-    const [ termMonths, setTermMonths ] = useState<number>(0);
-    const [ downPayment, setDownPayment ] = useState<number>(0);
+    const [ price, setPrice ] = useState<string>('');
+    const [ tradeInValue, setTradeInValue ] = useState<string>('');
+    const [ tradeInOwed, setTradeInOwed ] = useState<string>('');
+    const [ docFee, setDocFee ] = useState<string>('');
+    const [ dmvFees, setDmvFees ] = useState<string>('');
+    const [ taxRate, setTaxRate ] = useState<string>('');
+    const [ apr, setApr ] = useState<string>('');
+    const [ termMonths, setTermMonths ] = useState<string>('');
+    const [ downPayment, setDownPayment ] = useState<string>('');
     const [ otd, setOtd ] = useState<number>(0);
     const [ monthlyPayment, setMonthlyPayment ] = useState<number>(0);
     const [ schedule, setSchedule ] = useState<AmortizationRow[]>([]);
     const [ showResults, setShowResults ] = useState<boolean>(false);
+    const [ label, setLabel ] = useState<string>('');
+    const [ saveError, setSaveError ] = useState<string>('');
 
 
-    function handleCalculate(e: React.SubmitEvent<HTMLFormElement>) {
+    async function handleCalculate(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
 
         const otdInputs: CalcInputs = {
-            price,
-            tradeInValue,
-            tradeInOwed,
-            docFee,
-            dmvFees,
-            taxRate: taxRate / 100,
+            price: Number(price) || 0,
+            tradeInValue: Number(tradeInValue) || 0,
+            tradeInOwed: Number(tradeInOwed) || 0,
+            docFee: Number(docFee) || 0,
+            dmvFees: Number(dmvFees) || 0,
+            taxRate: Number(taxRate) / 100 || 0,
         };
 
         const calculatedOtd = calcOtd(otdInputs);
-        const amountFinanced = calculatedOtd - downPayment;
-        const amortizationInputs: AmortizationInputs = { amountFinanced, apr: apr / 100, termMonths};
+        const amountFinanced = calculatedOtd - Number(downPayment);
+        const amortizationInputs: AmortizationInputs = { amountFinanced, apr: Number(apr) / 100, termMonths: Number(termMonths)};
         const calculatedPayment = calcMonthlyPayment(amortizationInputs);
         const calculateSchedule = calcAmortizationSchedule(amortizationInputs, calculatedPayment);
 
@@ -40,6 +42,36 @@ function CalculateForm() {
         setMonthlyPayment(calculatedPayment);
         setSchedule(calculateSchedule);
         setShowResults(true);
+
+        try {
+            const response = await fetch('http://localhost:3001/api/calculations', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify({
+                    label,
+                    price,
+                    tradeInValue,
+                    tradeInOwed,
+                    docFee,
+                    dmvFees,
+                    taxRate,
+                    apr,
+                    termMonths,
+                    downPayment,
+                    otd: calculatedOtd,
+                    monthlyPayment: calculatedPayment,
+                }),
+            });
+
+            if (!response.ok) {
+                setSaveError('Failed to save calculation.');
+                setShowResults(true);
+                return;
+            }
+        } catch (err) {
+            console.log(err);
+        }
         
     }
     
@@ -49,6 +81,18 @@ function CalculateForm() {
             <div className='w-full max-w-2xl'>
                 <form onSubmit={handleCalculate} className='max-w-2xl space-y-6'>
                     <div className='grid grid-cols-2 gap-x-6 gap-y-4'>
+                    <div className='max-w-md space-y-1'>
+                            <label className='block text-xs font-semibold uppercase tracking-wide text-muted font-body'>
+                                Name for saved Calculation.
+                            </label>
+                            <input 
+                                type="text" 
+                                value={label}
+                                placeholder='Name'
+                                onChange={(e) => setLabel(String(e.target.value))} 
+                                className='w-full border-b-2 border-line bg-transparent py-2 font-mono text-lg text-ink outline-none focus:border-accent transition-colors'
+                            />
+                        </div>
                         <div className='max-w-md space-y-1'>
                             <label className='block text-xs font-semibold uppercase tracking-wide text-muted font-body'>
                                 Vehicle Sales Price: 
@@ -57,7 +101,7 @@ function CalculateForm() {
                                 type="number" 
                                 value={price}
                                 placeholder='Vehicle Sales Price'
-                                onChange={(e) => setPrice(Number(e.target.value))} 
+                                onChange={(e) => setPrice(String(e.target.value))} 
                                 className='w-full border-b-2 border-line bg-transparent py-2 font-mono text-lg text-ink outline-none focus:border-accent transition-colors'
                             />
                         </div>
@@ -69,7 +113,7 @@ function CalculateForm() {
                                 type="number" 
                                 value={tradeInValue}
                                 placeholder='Trade-in Value'
-                                onChange={(e) => setTradeInValue(Number(e.target.value))} 
+                                onChange={(e) => setTradeInValue(String(e.target.value))} 
                                 className='w-full border-b-2 border-line bg-transparent py-2 font-mono text-lg text-ink outline-none focus:border-accent transition-colors'
                             />
                         </div>
@@ -81,7 +125,7 @@ function CalculateForm() {
                                 type="number" 
                                 value={tradeInOwed}
                                 placeholder='Trade-in Amount Owed'
-                                onChange={(e) => setTradeInOwed(Number(e.target.value))} 
+                                onChange={(e) => setTradeInOwed(String(e.target.value))} 
                                 className='w-full border-b-2 border-line bg-transparent py-2 font-mono text-lg text-ink outline-none focus:border-accent transition-colors'
                             />
                         </div>
@@ -93,7 +137,7 @@ function CalculateForm() {
                                 type="number" 
                                 value={docFee}
                                 placeholder='DOC Fee'
-                                onChange={(e) => setDocFee(Number(e.target.value))} 
+                                onChange={(e) => setDocFee(String(e.target.value))} 
                                 className='w-full border-b-2 border-line bg-transparent py-2 font-mono text-lg text-ink outline-none focus:border-accent transition-colors'
                             />
                         </div>
@@ -105,7 +149,7 @@ function CalculateForm() {
                                 type="number" 
                                 value={dmvFees}
                                 placeholder='DMV Fees'
-                                onChange={(e) => setDmvFees(Number(e.target.value))} 
+                                onChange={(e) => setDmvFees(String(e.target.value))} 
                                 className='w-full border-b-2 border-line bg-transparent py-2 font-mono text-lg text-ink outline-none focus:border-accent transition-colors'
                             />
                         </div>
@@ -117,7 +161,7 @@ function CalculateForm() {
                                 type="number" 
                                 value={taxRate}
                                 placeholder='Sales Tax Rate'
-                                onChange={(e) => setTaxRate(Number(e.target.value))} 
+                                onChange={(e) => setTaxRate(String(e.target.value))} 
                                 className='w-full border-b-2 border-line bg-transparent py-2 font-mono text-lg text-ink outline-none focus:border-accent transition-colors'
                             />
                         </div>
@@ -129,7 +173,7 @@ function CalculateForm() {
                                 type="number" 
                                 value={apr}
                                 placeholder='Annual Percentage Rate'
-                                onChange={(e) => setApr(Number(e.target.value))}
+                                onChange={(e) => setApr(String(e.target.value))}
                                 className='w-full border-b-2 border-line bg-transparent py-2 font-mono text-lg text-ink outline-none focus:border-accent transition-colors' 
                             />
                         </div>
@@ -141,7 +185,7 @@ function CalculateForm() {
                                 type="number" 
                                 value={termMonths}
                                 placeholder='Months to Finance'
-                                onChange={(e) => setTermMonths(Number(e.target.value))}
+                                onChange={(e) => setTermMonths(String(e.target.value))}
                                 className='w-full border-b-2 border-line bg-transparent py-2 font-mono text-lg text-ink outline-none focus:border-accent transition-colors'
                             />
                         </div>
@@ -153,7 +197,7 @@ function CalculateForm() {
                                 type="number" 
                                 value={downPayment}
                                 placeholder='Down payment'
-                                onChange={(e) => setDownPayment(Number(e.target.value))}
+                                onChange={(e) => setDownPayment(String(e.target.value))}
                                 className='w-full border-b-2 border-line bg-transparent py-2 font-mono text-lg text-ink outline-none focus:border-accent transition-colors'
                             />
                         </div>
@@ -162,6 +206,11 @@ function CalculateForm() {
                         </button>
                     </div>
                 </form>
+                {saveError && (
+                    <section>
+                        <p>{saveError}</p>
+                    </section>
+                )}
                 {showResults && (
                     <section className="mt-8 max-w-2xl border border-line bg-paper p-6">
                         <div className="flex items-center justify-between border-b border-line py-3">

@@ -1,8 +1,10 @@
-import CalculatorForm from '../components/CalculatorForm';
+import CalculateForm from '../components/CalculatorForm';
 
 function CalculatePage() {
     return (
-        <CalculatorForm />
+        <main>
+            <CalculateForm />
+        </main>
     );
 }
 
