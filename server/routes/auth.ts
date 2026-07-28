@@ -1,11 +1,9 @@
 import { Router } from 'express';
 import { pool } from '../db';
-import express from 'express';
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+import jwt, { JwtPayload } from 'jsonwebtoken';
 import { requireAuth } from '../middleware/auth';
-import { JwtPayload } from 'jsonwebtoken';
-import { clearCookieOptions } from '../config'
+import { JWT_SECRET, cookieOptions, clearCookieOptions } from '../config'
 
 
 const router = Router();
@@ -20,7 +18,7 @@ router.get('/me', requireAuth, async (req, res) => {
     }
 })
 
-router.post('/register', express.json(), async (req, res) => {
+router.post('/register', async (req, res) => {
     try {
         const { username, email, password } = req.body;
         const result = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
@@ -38,7 +36,7 @@ router.post('/register', express.json(), async (req, res) => {
                 {expiresIn: '1h'}
             
             );
-            res.cookie('token', token, { httpOnly: true, secure: false, sameSite: 'strict', maxAge: 3600000 })
+            res.cookie('token', token, cookieOptions)
             res.status(201).json(newUser.rows[0]);
 
         } else {
@@ -50,7 +48,7 @@ router.post('/register', express.json(), async (req, res) => {
     }
 })
 
-router.post('/login', express.json(), async (req, res) => {
+router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
         const results = await pool.query('SELECT * FROM users WHERE email = $1', [email]);

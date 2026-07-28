@@ -11,6 +11,7 @@ const app = express();
 
 app.use(cookieParser());
 app.use(express.json({ limit: '10kb' }));
+app.set('trust proxy', 1);
 
 if (!IS_PROD) {
     app.use(cors({
@@ -32,6 +33,9 @@ app.get('/api/health', async (_req, res) => {
 
 app.use('/api/calculations', calculationsRouter);
 app.use('/api/auth', authRouter);
+app.use('/api', (_req, res) => {
+    res.status(404).json({ status: 'error', message: 'Endpoint not found.' })
+});
 
 if (IS_PROD) {
     const clientDist = path.join(__dirname, '../../dist');

@@ -26,3 +26,4 @@ CREATE TABLE IF NOT EXISTS saved_calculations (
 
 CREATE INDEX IF NOT EXISTS idx_saved_calculations_user_created
   ON saved_calculations (user_id, created_at DESC);
+

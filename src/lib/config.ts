@@ -1,5 +1,7 @@
-export const API_URL = import.meta.env.VITE_API_URL ?? '';
+const raw = import.meta.env.VITE_API_URL;
 
-if ( !API_URL ) {
-    throw new Error('VITE_API_URL is not set.');
+if (import.meta.env.DEV && !raw) {
+    throw new Error('VITE_API_URL is not set for development.');
 }
+
+export const API_URL = raw ?? '';
