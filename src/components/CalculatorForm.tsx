@@ -24,12 +24,13 @@ function CalculateForm() {
     const [ showResults, setShowResults ] = useState<boolean>(false);
     const [ label, setLabel ] = useState<string>('');
     const [ saveError, setSaveError ] = useState<string>('');
+    const [ isSaving, setIsSaving ] = useState(false);
 
 
     async function handleCalculate(e: React.SubmitEvent<HTMLFormElement>) {
         e.preventDefault();
         setSaveError('');
-    
+        
         // Percent at the input boundary, fraction everywhere past it.
         const inputs: LoanInputs = {
             price: toNumber(price),
@@ -61,6 +62,7 @@ function CalculateForm() {
         // Don't persist junk rows.
         if (inputs.price <= 0 || inputs.termMonths <= 0) return;
     
+        setIsSaving(true);
         try {
             const response = await fetch(`${API_URL}/api/calculations`, {
                 method: 'POST',
@@ -80,6 +82,8 @@ function CalculateForm() {
         } catch (err) {
             console.error(err);
             setSaveError('Could not reach the server — calculation not saved.');
+        } finally {
+            setIsSaving(false);
         }
     }
     
@@ -209,8 +213,8 @@ function CalculateForm() {
                                 className='w-full border-b-2 border-line bg-transparent py-2 font-mono text-lg text-ink outline-none focus:border-accent transition-colors'
                             />
                         </div>
-                        <button className='mt-2 border-2 border-ink px-6 py-2 font-body text-sm font-semibold uppercase tracking-wide text-ink transition-colors hover:bg-ink hover:text-paper'>
-                            Calculate
+                        <button type='submit' disabled={isSaving} className='mt-2 border-2 border-ink px-6 py-2 font-body text-sm font-semibold uppercase tracking-wide text-ink transition-colors hover:bg-ink hover:text-paper'>
+                            {isSaving ? 'Saving...' : 'Calculate'}
                         </button>
                     </div>
                 </form>
