@@ -20,6 +20,8 @@ Enter a vehicle's price, trade-in details, fees, APR, and loan term to get an in
 **Auth:** JWT (`jsonwebtoken`), `bcrypt` for password hashing, `cookie-parser`, HTTP-only cookies
 **Other:** `cors` for cross-origin requests between the Vite dev server and the API
 
+**[Live Demo →](https://car-loan-calc.onrender.com/login)**
+
 ## Getting Started
 
 ### Prerequisites
