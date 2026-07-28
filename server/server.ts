@@ -6,6 +6,7 @@ import authRouter from './routes/auth';
 import cors from 'cors';
 import path from 'path';
 import { PORT, IS_PROD } from './config';
+import { apiLimiter } from './middleware/rateLimit';
 
 const app = express();
 
@@ -19,6 +20,8 @@ if (!IS_PROD) {
         credentials: true,
     }));
 }
+
+app.use('/api', apiLimiter);
 
 // Health check
 app.get('/api/health', async (_req, res) => {

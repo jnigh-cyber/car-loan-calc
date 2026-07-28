@@ -3,6 +3,7 @@ import { pool } from '../db';
 import bcrypt from 'bcrypt';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { requireAuth } from '../middleware/auth';
+import { authLimiter } from '../middleware/rateLimit';
 import { JWT_SECRET, cookieOptions, clearCookieOptions } from '../config'
 
 
@@ -18,7 +19,7 @@ router.get('/me', requireAuth, async (req, res) => {
     }
 })
 
-router.post('/register', async (req, res) => {
+router.post('/register', authLimiter, async (req, res) => {
     try {
         const { username, email, password } = req.body;
         const result = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
@@ -32,7 +33,7 @@ router.post('/register', async (req, res) => {
 
             const token = jwt.sign(
                 { id: newUser.rows[0].id, username: newUser.rows[0].username },
-                process.env.JWT_SECRET!,
+                JWT_SECRET,
                 {expiresIn: '1h'}
             
             );
@@ -48,7 +49,7 @@ router.post('/register', async (req, res) => {
     }
 })
 
-router.post('/login', async (req, res) => {
+router.post('/login', authLimiter, async (req, res) => {
     try {
         const { email, password } = req.body;
         const results = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
@@ -61,7 +62,7 @@ router.post('/login', async (req, res) => {
             } else {
                 const token = jwt.sign(
                     { id: results.rows[0].id, username: results.rows[0].username },
-                    process.env.JWT_SECRET!,
+                    JWT_SECRET,
                     { expiresIn: '1h'}
                 );
 
