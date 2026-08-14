@@ -5,6 +5,7 @@ import { API_URL } from '../lib/config';
 
 function Header() {
     const { user, setUser } = useAuth();
+    console.log('user:', user)
     const navigate = useNavigate();
     const [error, setError] = useState<string>('');
 
