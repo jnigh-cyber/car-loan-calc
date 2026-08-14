@@ -32,12 +32,6 @@ function Header() {
                     Loan Calculator
                 </Link>
                 <nav className='flex items-center gap-6'>
-                    <Link
-                        to='/saved'
-                        className='font-body text-sm uppercase tracking-wide text-muted hover:text-ink transition-colors'
-                    >
-                        Saved Calculations
-                    </Link>
                     {user && (
                         <Link to='/saved' className='font-body text-sm uppercase tracking-wide text-muted hover:text-ink transition-colors'>
                             Saved Calculations
