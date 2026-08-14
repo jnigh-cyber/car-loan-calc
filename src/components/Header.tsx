@@ -4,7 +4,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { API_URL } from '../lib/config';
 
 function Header() {
-    const { setUser } = useAuth();
+    const { user, setUser } = useAuth();
     const navigate = useNavigate();
     const [error, setError] = useState<string>('');
 
@@ -37,20 +37,15 @@ function Header() {
                     >
                         Saved Calculations
                     </Link>
-                    {setUser != null ? (
-                        <button
-                            onClick={() => navigate('/login')}
-                            className='border-2 border-ink px-4 py-1.5 font-body text-xs font-semibold uppercase tracking-wide text-ink transition-colors hover:bg-ink hover:text-paper'
-                        >
-                            Log in
-                        </button>
+                    {user && (
+                        <Link to='/saved' className='font-body text-sm uppercase tracking-wide text-muted hover:text-ink transition-colors'>
+                            Saved Calculations
+                        </Link>
+                    )}
+                    {user ? (
+                        <button onClick={handleLogout} className='border-2 border-ink px-4 py-1.5 font-body text-xs font-semibold uppercase tracking-wide text-ink transition-colors hover:bg-ink hover:text-paper'>Log Out</button>
                     ) : (
-                        <button
-                        onClick={handleLogout}
-                        className='border-2 border-ink px-4 py-1.5 font-body text-xs font-semibold uppercase tracking-wide text-ink transition-colors hover:bg-ink hover:text-paper'
-                        >
-                            Log Out
-                        </button>
+                        <button onClick={() => navigate('/login')} className='border-2 border-ink px-4 py-1.5 font-body text-xs font-semibold uppercase tracking-wide text-ink transition-colors hover:bg-ink hover:text-paper'>Log In</button>
                     )}
                 </nav>
             </div>
