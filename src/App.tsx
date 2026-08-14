@@ -12,11 +12,11 @@ function App() {
   return (
       <Routes>
         <Route element={<Layout />}>
+          <Route path='/' element={<CalculatePage />} />
           <Route path='/login' element={<LoginPage />} />
           <Route path='/register' element={<RegisterPage  />} />
         </Route>
         <Route element={<ProtectedRoute />}>
-          <Route path='/' element={<CalculatePage />} />
           <Route path='/saved' element={<SavedCalculationsPage />} />
         </Route>
         <Route path='*' element={<NotFound />} />
