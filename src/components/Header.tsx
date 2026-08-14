@@ -23,6 +23,7 @@ function Header() {
         }
     }
 
+
     return (
         <header className='border-b border-line bg-paper px-8 py-4'>
             <div className='flex items-center justify-between'>
@@ -36,12 +37,21 @@ function Header() {
                     >
                         Saved Calculations
                     </Link>
-                    <button
+                    {setUser != null ? (
+                        <button
+                            onClick={() => navigate('/login')}
+                            className='border-2 border-ink px-4 py-1.5 font-body text-xs font-semibold uppercase tracking-wide text-ink transition-colors hover:bg-ink hover:text-paper'
+                        >
+                            Log in
+                        </button>
+                    ) : (
+                        <button
                         onClick={handleLogout}
                         className='border-2 border-ink px-4 py-1.5 font-body text-xs font-semibold uppercase tracking-wide text-ink transition-colors hover:bg-ink hover:text-paper'
-                    >
-                        Log Out
-                    </button>
+                        >
+                            Log Out
+                        </button>
+                    )}
                 </nav>
             </div>
             {error && (
